@@ -46,7 +46,7 @@ leaderboard_data["State Abbreviation"] = leaderboard_data["State"].map(state_abb
 
 # Initialize Dash app
 app = dash.Dash(__name__)
-
+server = app.server
 app.layout = html.Div([
     html.Div([
         html.H1("🏆 University Graduation Rate Leaderboard", style={"textAlign": "center", "color": "#004c99"}),
