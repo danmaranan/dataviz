@@ -1,1 +1,1 @@
-web: gunicorn leaderboard:app.server
+web: gunicorn app:app.server
