@@ -47,6 +47,7 @@ leaderboard_data["State Abbreviation"] = leaderboard_data["State"].map(state_abb
 # Initialize Dash app
 app = dash.Dash(__name__)
 server = app.server
+
 app.layout = html.Div([
     html.Div([
         html.H1("🏆 University Graduation Rate Leaderboard", style={"textAlign": "center", "color": "#004c99"}),
@@ -83,15 +84,15 @@ app.layout = html.Div([
                          style_header={"backgroundColor": "#004c99", "color": "white", "fontWeight": "bold", "textAlign": "center"},
                          style_cell={"textAlign": "center", "padding": "10px", "fontSize": "14px"}),
 
-    html.H3("📍 Universities by State", style={"textAlign": "center", "color": "#004c99", "paddingTop": "20px"}),
+    html.H3("📊 Graduation Rate Gaps by State", style={"textAlign": "center", "color": "#004c99", "paddingTop": "20px"}),
 
-    dcc.Graph(id="state-map")
+    dcc.Graph(id="state-boxplot")
 ], style={"maxWidth": "1200px", "margin": "auto", "backgroundColor": "#f8f9fa", "padding": "20px", "borderRadius": "10px"})
 
 
 @app.callback(
     Output("leaderboard-table", "data"),
-    Output("state-map", "figure"),
+    Output("state-boxplot", "figure"),
     Input("sort-selector", "value"),
     Input("search-box", "value"),
     Input("state-filter", "value")
@@ -107,8 +108,10 @@ def update_leaderboard(sort_by, search_query, selected_state):
 
     df_filtered = df_filtered.sort_values(by=sort_by, ascending=(sort_by != "Overall Graduation Rate"))
 
-    fig = px.scatter_geo(df_filtered, locations="State Abbreviation", locationmode="USA-states", 
-                         hover_name="Institution", title="University Locations by State", scope="usa")
+    # Generate box plot
+    fig = px.box(df_filtered, x="State", y=sort_by, points="all",
+                 title="Distribution of Graduation Gaps by State",
+                 labels={"State": "State", sort_by: "Graduation Rate Gap"})
 
     return df_filtered.to_dict("records"), fig
 
